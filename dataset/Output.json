@@ -1,0 +1,86 @@
+{
+	"name": "Output",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WeatherService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "timestamps",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sunrise",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sunset",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "temp",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "feels_like",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "pressure",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "humidity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dew_point",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "clouds",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "visibility",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "wind_speed",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "wind_deg",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "weather_main",
+				"type": "varchar"
+			},
+			{
+				"name": "weather_description",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "WeatherData"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

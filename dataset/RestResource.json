@@ -1,0 +1,33 @@
+{
+	"name": "RestResource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"API": {
+				"type": "String"
+			},
+			"lat": {
+				"type": "String"
+			},
+			"lon": {
+				"type": "String"
+			},
+			"Date": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "/data/3.0/onecall/timemachine?lat=19.07283000&lon=72.88261000&dt=@{dataset().Date}&appid=8e0ec9c24fa1f432fc121278e4556f3c",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

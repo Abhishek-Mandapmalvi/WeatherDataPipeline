@@ -1,0 +1,12 @@
+{
+	"name": "BlobService",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"containerUri": "https://weatherdatastrgacc.blob.core.windows.net/weatherdata",
+			"authenticationType": "Anonymous"
+		}
+	}
+}

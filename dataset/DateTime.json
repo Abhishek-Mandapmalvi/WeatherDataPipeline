@@ -1,0 +1,22 @@
+{
+	"name": "DateTime",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WeatherService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "date",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Datetable"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

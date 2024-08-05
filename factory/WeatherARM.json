@@ -1,0 +1,9 @@
+{
+	"name": "WeatherARM",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "08e615ab-12b7-42da-acf7-44a0f9166d2a",
+		"tenantId": "e4544e68-5f77-4d5c-87e1-cb9a61a94e67"
+	}
+}

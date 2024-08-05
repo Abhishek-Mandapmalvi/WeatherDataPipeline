@@ -1,0 +1,339 @@
+{
+	"name": "WeatherPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Date Lookup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DateTime",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Date Lookup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Date Lookup').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Web",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "GET",
+								"url": {
+									"value": "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=@{pipeline().parameters.lat}&lon=@{pipeline().parameters.lon}&dt=@{item().Dates}&appid=@{pipeline().parameters.appid}",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Copy data",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Web",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "/data/3.0/onecall/timemachine?lat=19.07283000&lon=72.88261000&dt=@{activity('Date Lookup').output.value}&appid=8e0ec9c24fa1f432fc121278e4556f3c"
+								},
+								{
+									"name": "Destination",
+									"value": "dbo.WeatherData"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET",
+									"paginationRules": {
+										"supportRFC5988": "true"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['data'][0]['dt']"
+											},
+											"sink": {
+												"name": "timestamps",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['sunrise']"
+											},
+											"sink": {
+												"name": "sunrise",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['sunset']"
+											},
+											"sink": {
+												"name": "sunset",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['temp']"
+											},
+											"sink": {
+												"name": "temp",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['feels_like']"
+											},
+											"sink": {
+												"name": "feels_like",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['pressure']"
+											},
+											"sink": {
+												"name": "pressure",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['humidity']"
+											},
+											"sink": {
+												"name": "humidity",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['dew_point']"
+											},
+											"sink": {
+												"name": "dew_point",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['clouds']"
+											},
+											"sink": {
+												"name": "clouds",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['visibility']"
+											},
+											"sink": {
+												"name": "visibility",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['wind_speed']"
+											},
+											"sink": {
+												"name": "wind_speed",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['wind_deg']"
+											},
+											"sink": {
+												"name": "wind_deg",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['weather'][0]['main']"
+											},
+											"sink": {
+												"name": "weather_main",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['weather'][0]['description']"
+											},
+											"sink": {
+												"name": "weather_description",
+												"type": "String"
+											}
+										}
+									],
+									"collectionReference": "$['data']",
+									"mapComplexValuesToString": true
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "RestResource",
+									"type": "DatasetReference",
+									"parameters": {
+										"API": {
+											"value": "@pipeline().parameters.appid",
+											"type": "Expression"
+										},
+										"lat": {
+											"value": "@pipeline().parameters.lat",
+											"type": "Expression"
+										},
+										"lon": {
+											"value": "@pipeline().parameters.lon",
+											"type": "Expression"
+										},
+										"Date": {
+											"value": "@item().Dates",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Output",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Human Readable Dates",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "WeatherService",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "UPDATE [dbo].[WeatherData]\nSET Dates = DATEADD(SECOND, timestamps, '1970-01-01 00:00:00')"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"parameters": {
+			"lat": {
+				"type": "string",
+				"defaultValue": "19.07283000"
+			},
+			"lon": {
+				"type": "string",
+				"defaultValue": "72.88261000"
+			},
+			"appid": {
+				"type": "string",
+				"defaultValue": "8e0ec9c24fa1f432fc121278e4556f3c"
+			}
+		},
+		"variables": {
+			"p_date": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-04T04:35:45Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
