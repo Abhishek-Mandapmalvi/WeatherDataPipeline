@@ -574,14 +574,14 @@
 							"scripts": [
 								{
 									"type": "Query",
-									"text": "UPDATE [dbo].[WeatherData]\nSET Dates = DATEADD(SECOND, timestamps, '1970-01-01 00:00:00')"
+									"text": "UPDATE [dbo].[WeatherData]\nSET Dates = CONVERT(DATE, DATEADD(MINUTE, 330, DATEADD(SECOND, timestamps, '1970-01-01'))),\n    Sunset_Time = CONVERT(TIME, DATEADD(MINUTE, 330, DATEADD(SECOND, sunset, '1970-01-01'))),\n    Sunrise_Time = CONVERT(TIME, DATEADD(MINUTE, 330, DATEADD(SECOND, sunrise, '1970-01-01')));"
 								}
 							],
 							"scriptBlockExecutionTimeout": "02:00:00"
 						}
 					},
 					{
-						"name": "Human Readable Sunrise Dates",
+						"name": "Temperature in Celcius",
 						"type": "Script",
 						"dependsOn": [
 							{
@@ -607,40 +607,7 @@
 							"scripts": [
 								{
 									"type": "Query",
-									"text": "UPDATE [dbo].[WeatherData]\nSET Sunrise_Time = DATEADD(SECOND, sunrise, '1970-01-01 00:00:00')"
-								}
-							],
-							"scriptBlockExecutionTimeout": "02:00:00"
-						}
-					},
-					{
-						"name": "Human Readable Sunset Dates",
-						"type": "Script",
-						"dependsOn": [
-							{
-								"activity": "Human Readable Sunrise Dates",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"linkedServiceName": {
-							"referenceName": "WeatherService",
-							"type": "LinkedServiceReference"
-						},
-						"typeProperties": {
-							"scripts": [
-								{
-									"type": "Query",
-									"text": "UPDATE [dbo].[WeatherData]\nSET Sunset_Time = DATEADD(SECOND, sunset, '1970-01-01 00:00:00')"
+									"text": "UPDATE [dbo].[WeatherData]\nSET Temperature = temp - 273.15;"
 								}
 							],
 							"scriptBlockExecutionTimeout": "02:00:00"
