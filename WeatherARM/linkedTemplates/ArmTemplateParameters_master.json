@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "WeatherARM"
+		},
+		"WeatherService_password": {
+			"value": ""
+		},
+		"AzureSynapseArtifacts_properties_typeProperties_endpoint": {
+			"value": "https://weathersynapsewrokspace.dev.azuresynapse.net"
+		},
+		"RestService_properties_typeProperties_url": {
+			"value": "https://api.openweathermap.org"
+		},
+		"WeatherService_properties_typeProperties_server": {
+			"value": "myweatherdbserver.database.windows.net"
+		},
+		"WeatherService_properties_typeProperties_database": {
+			"value": "WeatherSQLDB"
+		},
+		"WeatherService_properties_typeProperties_userName": {
+			"value": "arm"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
