@@ -1,0 +1,97 @@
+{
+	"name": "dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Output",
+						"type": "DatasetReference"
+					},
+					"name": "source"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "sort"
+				},
+				{
+					"name": "SelectDateVSTemp"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          timestamps as integer,",
+				"          sunrise as integer,",
+				"          sunset as integer,",
+				"          temp as double,",
+				"          feels_like as double,",
+				"          pressure as integer,",
+				"          humidity as integer,",
+				"          dew_point as double,",
+				"          clouds as integer,",
+				"          visibility as integer,",
+				"          wind_speed as double,",
+				"          wind_deg as integer,",
+				"          weather_main as string,",
+				"          weather_description as string,",
+				"          Temperature as double,",
+				"          Dates as date,",
+				"          Sunset_Time as timestamp,",
+				"          Sunrise_Time as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source",
+				"source sort(asc(timestamps, true)) ~> sort",
+				"sort select(mapColumn(",
+				"          timestamps,",
+				"          sunrise,",
+				"          sunset,",
+				"          temp,",
+				"          feels_like,",
+				"          pressure,",
+				"          humidity,",
+				"          dew_point,",
+				"          clouds,",
+				"          visibility,",
+				"          wind_speed,",
+				"          wind_deg,",
+				"          weather_main,",
+				"          weather_description,",
+				"          Temperature,",
+				"          Dates,",
+				"          Sunset_Time,",
+				"          Sunrise_Time",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectDateVSTemp",
+				"SelectDateVSTemp sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Dates as date,",
+				"          Temperature as double",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink"
+			]
+		}
+	}
+}

@@ -77,10 +77,23 @@
 				"type": "varchar"
 			},
 			{
+				"name": "Temperature",
+				"type": "float",
+				"precision": 15
+			},
+			{
 				"name": "Dates",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
+				"type": "date"
+			},
+			{
+				"name": "Sunset_Time",
+				"type": "time",
+				"scale": 7
+			},
+			{
+				"name": "Sunrise_Time",
+				"type": "time",
+				"scale": 7
 			}
 		],
 		"typeProperties": {
