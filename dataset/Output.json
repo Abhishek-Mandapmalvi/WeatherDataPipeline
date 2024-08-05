@@ -75,6 +75,12 @@
 			{
 				"name": "weather_description",
 				"type": "varchar"
+			},
+			{
+				"name": "Dates",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			}
 		],
 		"typeProperties": {

@@ -1,0 +1,54 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Output",
+						"type": "DatasetReference"
+					},
+					"name": "source",
+					"description": "Import data from SQL DB"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "sort"
+				},
+				{
+					"name": "select"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          timestamps as integer,",
+				"          sunrise as integer,",
+				"          sunset as integer,",
+				"          temp as double,",
+				"          feels_like as double,",
+				"          pressure as integer,",
+				"          humidity as integer,",
+				"          dew_point as double,",
+				"          clouds as integer,",
+				"          visibility as integer,",
+				"          wind_speed as double,",
+				"          wind_deg as integer,",
+				"          weather_main as string,",
+				"          weather_description as string,",
+				"          Dates as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 100,",
+				"     isolationLevel: 'READ_COMMITTED',",
+				"     format: 'table') ~> source",
+				"source sort(asc(Dates, true)) ~> sort",
+				"sort select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select"
+			]
+		}
+	}
+}
