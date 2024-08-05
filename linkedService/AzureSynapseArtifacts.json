@@ -1,0 +1,12 @@
+{
+	"name": "AzureSynapseArtifacts",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSynapseArtifacts",
+		"typeProperties": {
+			"endpoint": "https://weathersynapsewrokspace.dev.azuresynapse.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/ac416559-d60c-4a5f-b4ba-ba97e99625ed/resourceGroups/WeatherData/providers/Microsoft.Synapse/workspaces/weathersynapsewrokspace"
+		}
+	}
+}
