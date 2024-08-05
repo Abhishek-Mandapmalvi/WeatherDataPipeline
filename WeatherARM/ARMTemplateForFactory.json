@@ -387,6 +387,43 @@
 							],
 							"scriptBlockExecutionTimeout": "02:00:00"
 						}
+					},
+					{
+						"name": "Transformation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Temperature in Celcius",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source": {},
+									"sink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -417,6 +454,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DateTime')]",
 				"[concat(variables('factoryId'), '/linkedServices/WeatherService')]",
+				"[concat(variables('factoryId'), '/dataflows/dataflow')]",
 				"[concat(variables('factoryId'), '/datasets/RestResource')]",
 				"[concat(variables('factoryId'), '/datasets/Output')]"
 			]
@@ -528,10 +566,23 @@
 						"type": "varchar"
 					},
 					{
+						"name": "Temperature",
+						"type": "float",
+						"precision": 15
+					},
+					{
 						"name": "Dates",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
+						"type": "date"
+					},
+					{
+						"name": "Sunset_Time",
+						"type": "time",
+						"scale": 7
+					},
+					{
+						"name": "Sunrise_Time",
+						"type": "time",
+						"scale": 7
 					}
 				],
 				"typeProperties": {
@@ -645,6 +696,144 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Output",
+								"type": "DatasetReference"
+							},
+							"name": "source"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DateVStempDS",
+								"type": "DatasetReference"
+							},
+							"name": "sink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "sort"
+						},
+						{
+							"name": "SelectDateVSTemp"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          timestamps as integer,",
+						"          sunrise as integer,",
+						"          sunset as integer,",
+						"          temp as double,",
+						"          feels_like as double,",
+						"          pressure as integer,",
+						"          humidity as integer,",
+						"          dew_point as double,",
+						"          clouds as integer,",
+						"          visibility as integer,",
+						"          wind_speed as double,",
+						"          wind_deg as integer,",
+						"          weather_main as string,",
+						"          weather_description as string,",
+						"          Temperature as double,",
+						"          Dates as date,",
+						"          Sunset_Time as timestamp,",
+						"          Sunrise_Time as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source",
+						"source sort(asc(timestamps, true)) ~> sort",
+						"sort select(mapColumn(",
+						"          timestamps,",
+						"          sunrise,",
+						"          sunset,",
+						"          temp,",
+						"          feels_like,",
+						"          pressure,",
+						"          humidity,",
+						"          dew_point,",
+						"          clouds,",
+						"          visibility,",
+						"          wind_speed,",
+						"          wind_deg,",
+						"          weather_main,",
+						"          weather_description,",
+						"          Temperature,",
+						"          Dates,",
+						"          Sunset_Time,",
+						"          Sunrise_Time",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectDateVSTemp",
+						"SelectDateVSTemp sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Dates as date,",
+						"          Temperature as double",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Dates,",
+						"          Temperature",
+						"     )) ~> sink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Output')]",
+				"[concat(variables('factoryId'), '/datasets/DateVStempDS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DateVStempDS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WeatherService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Dates",
+						"type": "date"
+					},
+					{
+						"name": "Temperature",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DateVSTemp"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/WeatherService')]"
+			]
 		}
 	]
 }
