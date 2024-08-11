@@ -28,7 +28,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "For Loop",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -320,7 +320,7 @@
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "ForEach1",
+						"activity": "For Loop",
 						"dependencyConditions": [
 							"Succeeded"
 						]
