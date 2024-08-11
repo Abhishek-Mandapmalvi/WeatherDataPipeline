@@ -5,11 +5,23 @@
 		"factoryName": {
 			"value": "WeatherARM"
 		},
+		"LocalSqlServer_password": {
+			"value": ""
+		},
 		"WeatherService_password": {
 			"value": ""
 		},
 		"AzureSynapseArtifacts_properties_typeProperties_endpoint": {
 			"value": "https://weathersynapsewrokspace.dev.azuresynapse.net"
+		},
+		"LocalSqlServer_properties_typeProperties_server": {
+			"value": "DESKTOP-PFN54TA\\SQLEXPRESS"
+		},
+		"LocalSqlServer_properties_typeProperties_database": {
+			"value": "WeatherSQLDB"
+		},
+		"LocalSqlServer_properties_typeProperties_userName": {
+			"value": "arm"
 		},
 		"RestService_properties_typeProperties_url": {
 			"value": "https://api.openweathermap.org"

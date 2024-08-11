@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "WeatherARM"
 		},
+		"LocalSqlServer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LocalSqlServer'"
+		},
 		"WeatherService_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'WeatherService'"
@@ -14,6 +18,18 @@
 		"AzureSynapseArtifacts_properties_typeProperties_endpoint": {
 			"type": "string",
 			"defaultValue": "https://weathersynapsewrokspace.dev.azuresynapse.net"
+		},
+		"LocalSqlServer_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "DESKTOP-PFN54TA\\SQLEXPRESS"
+		},
+		"LocalSqlServer_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "WeatherSQLDB"
+		},
+		"LocalSqlServer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "arm"
 		},
 		"RestService_properties_typeProperties_url": {
 			"type": "string",
@@ -69,7 +85,7 @@
 						}
 					},
 					{
-						"name": "ForEach1",
+						"name": "For Loop",
 						"type": "ForEach",
 						"dependsOn": [
 							{
@@ -318,6 +334,114 @@
 											"parameters": {}
 										}
 									]
+								},
+								{
+									"name": "Delete Row From DateTime Lookup",
+									"type": "Script",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"linkedServiceName": {
+										"referenceName": "WeatherService",
+										"type": "LinkedServiceReference"
+									},
+									"typeProperties": {
+										"scripts": [
+											{
+												"type": "Query",
+												"text": {
+													"value": "DELETE FROM dbo.DateTime\nWHERE Dates = @{item().Dates};",
+													"type": "Expression"
+												}
+											}
+										],
+										"scriptBlockExecutionTimeout": "02:00:00"
+									}
+								},
+								{
+									"name": "tempIterationCount",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "tempIterationCount",
+										"value": {
+											"value": "@add(variables('iterationCount'),1)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Iteration",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "tempIterationCount",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "iterationCount",
+										"value": {
+											"value": "@variables('tempIterationCount')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Iteration",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@equals(variables('iterationCount'), 1000)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Stop",
+												"type": "Fail",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"message": "Limit Reached",
+													"errorCode": "Limit Reached"
+												}
+											}
+										]
+									}
 								}
 							]
 						}
@@ -327,7 +451,7 @@
 						"type": "Script",
 						"dependsOn": [
 							{
-								"activity": "ForEach1",
+								"activity": "For Loop",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -387,43 +511,6 @@
 							],
 							"scriptBlockExecutionTimeout": "02:00:00"
 						}
-					},
-					{
-						"name": "Transformation",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Temperature in Celcius",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source": {},
-									"sink": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
 					}
 				],
 				"policy": {
@@ -446,6 +533,14 @@
 				"variables": {
 					"p_date": {
 						"type": "String"
+					},
+					"iterationCount": {
+						"type": "Integer",
+						"defaultValue": 0
+					},
+					"tempIterationCount": {
+						"type": "Integer",
+						"defaultValue": 0
 					}
 				},
 				"annotations": [],
@@ -454,7 +549,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DateTime')]",
 				"[concat(variables('factoryId'), '/linkedServices/WeatherService')]",
-				"[concat(variables('factoryId'), '/dataflows/dataflow')]",
 				"[concat(variables('factoryId'), '/datasets/RestResource')]",
 				"[concat(variables('factoryId'), '/datasets/Output')]"
 			]
@@ -479,6 +573,37 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "Datetable"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/WeatherService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DateVStempDS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WeatherService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Dates",
+						"type": "date"
+					},
+					{
+						"name": "Temperature",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DateVSTemp"
 				}
 			},
 			"dependsOn": [
@@ -661,6 +786,34 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LocalSqlServer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"server": "[parameters('LocalSqlServer_properties_typeProperties_server')]",
+					"database": "[parameters('LocalSqlServer_properties_typeProperties_database')]",
+					"encrypt": "optional",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('LocalSqlServer_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('LocalSqlServer_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "localintegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/localintegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestService')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -694,6 +847,16 @@
 						"value": "[parameters('WeatherService_password')]"
 					}
 				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/localintegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
 			},
 			"dependsOn": []
 		},
@@ -802,37 +965,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Output')]",
 				"[concat(variables('factoryId'), '/datasets/DateVStempDS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DateVStempDS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "WeatherService",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "Dates",
-						"type": "date"
-					},
-					{
-						"name": "Temperature",
-						"type": "float",
-						"precision": 15
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "DateVSTemp"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/WeatherService')]"
 			]
 		}
 	]

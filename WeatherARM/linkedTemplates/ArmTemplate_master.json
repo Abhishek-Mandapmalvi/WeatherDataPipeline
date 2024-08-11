@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "WeatherARM"
 		},
+		"LocalSqlServer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LocalSqlServer'"
+		},
 		"WeatherService_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'WeatherService'"
@@ -14,6 +18,18 @@
 		"AzureSynapseArtifacts_properties_typeProperties_endpoint": {
 			"type": "string",
 			"defaultValue": "https://weathersynapsewrokspace.dev.azuresynapse.net"
+		},
+		"LocalSqlServer_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "DESKTOP-PFN54TA\\SQLEXPRESS"
+		},
+		"LocalSqlServer_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "WeatherSQLDB"
+		},
+		"LocalSqlServer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "arm"
 		},
 		"RestService_properties_typeProperties_url": {
 			"type": "string",
@@ -61,6 +77,9 @@
 					"WeatherService_password": {
 						"value": "[parameters('WeatherService_password')]"
 					},
+					"LocalSqlServer_password": {
+						"value": "[parameters('LocalSqlServer_password')]"
+					},
 					"AzureSynapseArtifacts_properties_typeProperties_endpoint": {
 						"value": "[parameters('AzureSynapseArtifacts_properties_typeProperties_endpoint')]"
 					},
@@ -75,6 +94,15 @@
 					},
 					"WeatherService_properties_typeProperties_userName": {
 						"value": "[parameters('WeatherService_properties_typeProperties_userName')]"
+					},
+					"LocalSqlServer_properties_typeProperties_server": {
+						"value": "[parameters('LocalSqlServer_properties_typeProperties_server')]"
+					},
+					"LocalSqlServer_properties_typeProperties_database": {
+						"value": "[parameters('LocalSqlServer_properties_typeProperties_database')]"
+					},
+					"LocalSqlServer_properties_typeProperties_userName": {
+						"value": "[parameters('LocalSqlServer_properties_typeProperties_userName')]"
 					}
 				}
 			},
