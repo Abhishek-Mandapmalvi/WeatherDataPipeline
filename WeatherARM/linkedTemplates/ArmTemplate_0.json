@@ -321,7 +321,7 @@
 				"type": "RestResource",
 				"typeProperties": {
 					"relativeUrl": {
-						"value": "/data/3.0/onecall/timemachine?lat=19.07283000&lon=72.88261000&dt=@{dataset().Date}&appid=8e0ec9c24fa1f432fc121278e4556f3c",
+						"value": "/data/3.0/onecall/timemachine?lat=19.07283000&lon=72.88261000&dt=@{dataset().Date}&appid=5ee74742f55773cc09663f573481b580",
 						"type": "Expression"
 					}
 				},
@@ -616,7 +616,7 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"API": {
-													"value": "@pipeline().parameters.appid",
+													"value": "@pipeline().parameters.Secondary_APPID",
 													"type": "Expression"
 												},
 												"lat": {
