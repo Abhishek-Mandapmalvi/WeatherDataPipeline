@@ -344,6 +344,23 @@
 								"variableName": "iterationCount",
 								"value": "@variables('tempIterationCount')"
 							}
+						},
+						{
+							"name": "Stop1",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "Web",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Limit Exceeded",
+								"errorCode": "Limit Exceeded"
+							}
 						}
 					]
 				}
