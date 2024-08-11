@@ -426,7 +426,7 @@
 										"method": "GET",
 										"headers": {},
 										"url": {
-											"value": "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=@{pipeline().parameters.lat}&lon=@{pipeline().parameters.lon}&dt=@{item().Dates}&appid=@{pipeline().parameters.appid}",
+											"value": "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=@{pipeline().parameters.lat}&lon=@{pipeline().parameters.lon}&dt=@{item().Dates}&appid=@{pipeline().parameters.Secondary_APPID}",
 											"type": "Expression"
 										}
 									}
@@ -710,6 +710,23 @@
 										"variableName": "iterationCount",
 										"value": "@variables('tempIterationCount')"
 									}
+								},
+								{
+									"name": "Stop1",
+									"type": "Fail",
+									"dependsOn": [
+										{
+											"activity": "Web",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "Limit Exceeded",
+										"errorCode": "Limit Exceeded"
+									}
 								}
 							]
 						}
@@ -832,6 +849,10 @@
 					"appid": {
 						"type": "string",
 						"defaultValue": "8e0ec9c24fa1f432fc121278e4556f3c"
+					},
+					"Secondary_APPID": {
+						"type": "string",
+						"defaultValue": "5ee74742f55773cc09663f573481b580"
 					}
 				},
 				"variables": {
