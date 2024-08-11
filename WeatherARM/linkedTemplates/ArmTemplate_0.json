@@ -643,42 +643,6 @@
 									]
 								},
 								{
-									"name": "Delete Row From DateTime Lookup",
-									"type": "Script",
-									"dependsOn": [
-										{
-											"activity": "Copy data",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"linkedServiceName": {
-										"referenceName": "WeatherService",
-										"type": "LinkedServiceReference"
-									},
-									"typeProperties": {
-										"scripts": [
-											{
-												"type": "Query",
-												"text": {
-													"value": "DELETE FROM dbo.DateTime\nWHERE Dates = @{item().Dates};",
-													"type": "Expression"
-												}
-											}
-										],
-										"scriptBlockExecutionTimeout": "02:00:00"
-									}
-								},
-								{
 									"name": "tempIterationCount",
 									"type": "SetVariable",
 									"dependsOn": [],
@@ -791,7 +755,7 @@
 						"type": "Script",
 						"dependsOn": [
 							{
-								"activity": "Human Readable Dates",
+								"activity": "For Loop",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -814,6 +778,42 @@
 								{
 									"type": "Query",
 									"text": "UPDATE [dbo].[WeatherData]\nSET Temperature = temp - 273.15;"
+								}
+							],
+							"scriptBlockExecutionTimeout": "02:00:00"
+						}
+					},
+					{
+						"name": "Delete from DateTable",
+						"type": "Script",
+						"dependsOn": [
+							{
+								"activity": "For Loop",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "WeatherService",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": {
+										"value": "DELETE TOP @(variables('iterationCount'))\nFROM [dbo].[DateTable];",
+										"type": "Expression"
+									}
 								}
 							],
 							"scriptBlockExecutionTimeout": "02:00:00"
