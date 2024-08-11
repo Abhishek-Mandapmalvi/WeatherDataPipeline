@@ -251,7 +251,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"API": {
-											"value": "@pipeline().parameters.appid",
+											"value": "@pipeline().parameters.Secondary_APPID",
 											"type": "Expression"
 										},
 										"lat": {
