@@ -353,35 +353,11 @@
 									}
 								},
 								{
-									"name": "Iteration",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "tempIterationCount",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "iterationCount",
-										"value": {
-											"value": "@variables('tempIterationCount')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "If Condition1",
+									"name": "If Condition",
 									"type": "IfCondition",
 									"dependsOn": [
 										{
-											"activity": "Iteration",
+											"activity": "IterationCount",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -405,6 +381,27 @@
 												}
 											}
 										]
+									}
+								},
+								{
+									"name": "IterationCount",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "tempIterationCount",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "iterationCount",
+										"value": "@variables('tempIterationCount')"
 									}
 								}
 							]
