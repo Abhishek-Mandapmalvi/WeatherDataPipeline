@@ -277,75 +277,6 @@
 							]
 						},
 						{
-							"name": "tempIterationCount",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "tempIterationCount",
-								"value": {
-									"value": "@add(variables('iterationCount'),1)",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "If Condition",
-							"type": "IfCondition",
-							"dependsOn": [
-								{
-									"activity": "IterationCount",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"expression": {
-									"value": "@equals(variables('iterationCount'), 1000)",
-									"type": "Expression"
-								},
-								"ifFalseActivities": [
-									{
-										"name": "Stop",
-										"type": "Fail",
-										"dependsOn": [],
-										"userProperties": [],
-										"typeProperties": {
-											"message": "Limit Reached",
-											"errorCode": "Limit Reached"
-										}
-									}
-								]
-							}
-						},
-						{
-							"name": "IterationCount",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "tempIterationCount",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "iterationCount",
-								"value": "@variables('tempIterationCount')"
-							}
-						},
-						{
 							"name": "Stop1",
 							"type": "Fail",
 							"dependsOn": [
@@ -426,42 +357,6 @@
 						{
 							"type": "Query",
 							"text": "UPDATE [dbo].[WeatherData]\nSET Temperature = temp - 273.15;"
-						}
-					],
-					"scriptBlockExecutionTimeout": "02:00:00"
-				}
-			},
-			{
-				"name": "Delete from DateTable",
-				"type": "Script",
-				"dependsOn": [
-					{
-						"activity": "For Loop",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"linkedServiceName": {
-					"referenceName": "WeatherService",
-					"type": "LinkedServiceReference"
-				},
-				"typeProperties": {
-					"scripts": [
-						{
-							"type": "Query",
-							"text": {
-								"value": "DELETE TOP @(variables('iterationCount'))\nFROM [dbo].[DateTable];",
-								"type": "Expression"
-							}
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
