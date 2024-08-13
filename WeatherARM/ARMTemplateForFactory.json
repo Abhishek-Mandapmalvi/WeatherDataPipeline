@@ -119,7 +119,7 @@
 										"method": "GET",
 										"headers": {},
 										"url": {
-											"value": "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=@{pipeline().parameters.lat}&lon=@{pipeline().parameters.lon}&dt=@{item().Dates}&appid=@{pipeline().parameters.Secondary_APPID}",
+											"value": "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=@{pipeline().parameters.lat}&lon=@{pipeline().parameters.lon}&dt=@{item().Dates}&appid=@{pipeline().parameters.appid3}",
 											"type": "Expression"
 										}
 									}
@@ -309,7 +309,7 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"API": {
-													"value": "@pipeline().parameters.Secondary_APPID",
+													"value": "@pipeline().parameters.appid3",
 													"type": "Expression"
 												},
 												"lat": {
@@ -441,6 +441,10 @@
 					"Secondary_APPID": {
 						"type": "string",
 						"defaultValue": "5ee74742f55773cc09663f573481b580"
+					},
+					"appid3": {
+						"type": "string",
+						"defaultValue": "d1eaf859d5f713c26399cf5ead4c73df"
 					}
 				},
 				"variables": {
@@ -659,7 +663,7 @@
 				"type": "RestResource",
 				"typeProperties": {
 					"relativeUrl": {
-						"value": "/data/3.0/onecall/timemachine?lat=19.07283000&lon=72.88261000&dt=@{dataset().Date}&appid=5ee74742f55773cc09663f573481b580",
+						"value": "/data/3.0/onecall/timemachine?lat=19.07283000&lon=72.88261000&dt=@{dataset().Date}&appid=d1eaf859d5f713c26399cf5ead4c73df",
 						"type": "Expression"
 					}
 				},
