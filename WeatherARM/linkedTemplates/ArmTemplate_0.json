@@ -426,7 +426,7 @@
 										"method": "GET",
 										"headers": {},
 										"url": {
-											"value": "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=@{pipeline().parameters.lat}&lon=@{pipeline().parameters.lon}&dt=@{item().Dates}&appid=@{pipeline().parameters.Secondary_APPID}",
+											"value": "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=@{pipeline().parameters.lat}&lon=@{pipeline().parameters.lon}&dt=@{item().Dates}&appid=@{pipeline().parameters.appid3}",
 											"type": "Expression"
 										}
 									}
@@ -616,7 +616,7 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"API": {
-													"value": "@pipeline().parameters.Secondary_APPID",
+													"value": "@pipeline().parameters.appid3",
 													"type": "Expression"
 												},
 												"lat": {
